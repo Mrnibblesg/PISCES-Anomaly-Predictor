@@ -5,23 +5,32 @@ An application that utilizes PISCES data to predict system anomalies, drawing fr
 
 ## Genreal approach and goal: 
 
-  Implement a open source framework/project that helps analysts detect and predict malicious network activity. 
-  
-  
-  
-  
+Implement an open source framework/project that helps analysts detect and predict malicious network activity.
+
+
+
+    
   ## Possible Data points:
   
-  * Traffic spike anomolies
-  *  unusual ports
-  *  large connection volume
-  *  termporal anamolies
-  *  flow persestience
-  *  long duration connections
-  *  failed logins
-  *  known IPs
-  *  new devices
-  *  location
+* Traffic spike anomalies
+
+* unusual ports
+
+* large connection volume
+
+* temporal anomalies
+
+* flow persistence
+
+* long duration connections
+
+* failed logins
+
+* known IPs
+
+* new devices
+
+* location
 
 
 ## Dates:
