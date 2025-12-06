@@ -1,3 +1,5 @@
 .python-version
 activate
 venv/
+.env
+__pycache__/*
