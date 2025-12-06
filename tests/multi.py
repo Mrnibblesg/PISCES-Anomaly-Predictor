@@ -3,11 +3,8 @@ from orion.data import load_anomalies
 from orion import Orion
 import pandas as pd
 
-# load_test_data('multivariate/S-1')
 def run_model():
-    features = [" Source IP",
-                " Destination IP",
-                " Timestamp",
+    features = [" Timestamp",
                 " Flow Duration",
                 " Total Fwd Packets",
                 " Total Backward Packets",
@@ -17,36 +14,30 @@ def run_model():
     # Things were never meant to be this way
     # We don't have access to OpenSearch anymore so our data isn't as high quality
     data = load_csv('./data/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv', features)
-    data = data.rename(columns={' Timestamp': 'Original_Timestamp'})
-    data['Minute_Floor'] = data['Original_Timestamp'].dt.floor('min')
-
-    def apply_synthetic_timestamp(group):
-        N = len(group)
-
-        time_step = pd.Timedelta(60 / N, unit='s')
-
-        start_time = group['Minute_Floor'].iloc[0]
-        new_timestamps = [start_time + i * time_step for i in range(N)]
-
-        group['New_Timestamp'] = new_timestamps
-        return group
 
     # Give seconds to each group of minutes
-    data_redistributed = data.groupby('Minute_Floor', group_keys=False).apply(apply_synthetic_timestamp)
-    data_redistributed = data_redistributed.drop(columns=['Original_Timestamp', 'Minute_Floor'])
-    data_redistributed = data_redistributed.rename(columns={'New_Timestamp': 'Timestamp'})
+    #data_redistributed = data.groupby('Minute_Floor', group_keys=False).apply(apply_synthetic_timestamp)
+    #data_redistributed = data_redistributed.drop(columns=['Original_Timestamp', 'Minute_Floor'])
+    #data_redistributed = data_redistributed.rename(columns={'New_Timestamp': 'timestamp'})
+    
+    print(data.head())
+    print(data.dtypes)
+    epoch = pd.Timestamp("1970-01-01 00:00:00")
+    data[" Timestamp"] = (data[" Timestamp"] - epoch).dt.total_seconds()
+    new_columns = ["timestamp"]
+    new_columns.extend(features[1:])
+    print(new_columns)
+    data.columns = ['timestamp', '0', '1', '2', '3', '4']
+    print(data.head())
 
-    print(data_redistributed.head())
-    #USE IMPUTER
+    #data_redistributed['timestamp'] = (['timestamp'].astype(int) / 10**9).astype(int)
+
     hyperparameters = {
-        "mlstars.custom.timeseries_preprocessing.rolling_window_sequences#1": {
-            'window_size': 150,
-            'target_column': 0
-        },
         'orion.primitives.tadgan.TadGAN#1': {
             'epochs': 3,
             'verbose': True,
-            'input_shape': [150, features.size]
+            'input_shape': (150, 5),
+            'target_shape': (150, 1)
         }
     }
 
@@ -54,8 +45,13 @@ def run_model():
         pipeline='tadgan',
         hyperparameters=hyperparameters
     )
-
-    orion.fit(data)
+    #print(data.iloc[:300,:].shape)
+    print(type(data))
+    print(type(S1))
+    print(data.head())
+    print("S1: ", S1.head())
+    print(S1.columns)
+    orion.fit(data[:300])
     new_data = load_signal('multivariate/S-1')
     anomalies = orion.detect(new_data)
     ground_truth = load_anomalies('S-1')
@@ -68,6 +64,7 @@ def load_test_data(name):
     return load_signal(name)
 
 
+S1 = load_test_data('multivariate/S-1')
 def load_csv(path, features):
     return pd.read_csv(path, header=0, usecols=features,
                        parse_dates=[" Timestamp"])
