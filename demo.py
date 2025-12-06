@@ -1,6 +1,8 @@
 from orion.data import load_signal
 train_data = load_signal('S-1-train')
-train_data.head()
+print(train_data.size)
+print(train_data.ndim)
+print(train_data.head())
 
 from orion import Orion
 orion = Orion()
@@ -15,6 +17,7 @@ orion = Orion(
 )
 orion.fit(train_data)
 
+# Load data to compare against ground-truth
 new_data = load_signal('S-1-new')
 anomalies = orion.detect(new_data)
 
