@@ -68,4 +68,4 @@ except Exception as e:
 print(response)
 time_series = process_flow_data(response)
 with open(save_file, 'w') as sf:
-    sf.write(time_series)
+    sf.write('/n'.join(time_series))
