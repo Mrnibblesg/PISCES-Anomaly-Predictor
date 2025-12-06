@@ -96,8 +96,7 @@ def process_flow_data(opensearch_hits):
         # Calculate the time difference (timedelta object)
         time_difference = current_time - baseline_time
 
-        # Convert timedelta to total milliseconds
-        # Total seconds * 1000 + total microseconds / 1000
+        # get the time in seconds
         time_in_s = int(time_difference.total_seconds())
 
         # Append to the time series
