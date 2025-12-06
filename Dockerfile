@@ -1,21 +1,36 @@
-# Use a lightweight Python image
-FROM python:3.11-slim
+FROM ubuntu:22.04
 
-# Set a working directory inside the container
-WORKDIR /app
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install Python, build deps and TensorFlow (CPU)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    git \
+    python3 \
+    python3-pip \
+    python3-venv \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    libbz2-dev \
+    liblzma-dev \
+    zlib1g-dev \
+    libncurses5-dev \
+    libncursesw5-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/* \
+    && python3 -m pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && python3 -m pip install --no-cache-dir tensorflow
+
+    #WORKDIR /workspace
+
+    # Copy current directory into the container workdir
+    #COPY . /workspace
+    VOLUME ["/app"]
 
 
 
-# Copy Python dependency file first to leverage docker layer caching
-COPY requirements.txt .
-
-# Install dependencies if requirements.txt exists
-RUN pip install --no-cache-dir -r requirements.txt || true
-
-# Copy the rest of your project files
-COPY . .
-
-VOLUME ["/app/data"]
-
-# Default command to run your Python app
-CMD ["python", "main.py"]
+    CMD ["/bin/bash"]
