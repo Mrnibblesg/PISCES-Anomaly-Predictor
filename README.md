@@ -28,7 +28,7 @@ The features we had to compromise for, and focus our efforts on detecting a DDoS
 - Total Bwd packets
 - Fwd packet length mean
 - Bwd packet length mean
-- Byte transfer
+- Flow Duration
 
 Query_tooling.py contains a test case inside a main guard to simulate actual results from OpenSearch.
 tests/multi.py contains code which is supposed to tune a TadGAN pipeline for multivariate data.
@@ -44,5 +44,14 @@ tests/multi.py contains code which is supposed to tune a TadGAN pipeline for mul
 ## To use
 - Run run_query.py with the desired host IP you'd like to investigate as well as a destination file for results.
 - Run query_tooling.py to test feature extraction with mock data.
-- Run multi.py to test TadGAN anomaly training & scoring. (Non-functional)
+- Run working.py (located in tests folder) to test TadGAN anomaly training & scoring. (functional on the test dataset)
+    - Slight modifications to the script would be needed for opensearch data (col names, num of value cols, etc...)
 
+
+
+## Example output (5 epochs on small dataset featuring DDOS traffic): 
+
+![alt text](anomalies_plot.png)
+
+
+> Test dataset source: https://www.unb.ca/cic/datasets/ids-2017.html
